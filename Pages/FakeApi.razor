@@ -1,0 +1,74 @@
+@page "/fake-api"
+
+@using StateContainers
+@using TodoApi.Models.Response
+@inject ITodoHttpClient TodoClient
+@inject TodoStore TodoStore
+
+<h3>Fake API</h3>
+
+<button @onclick="GetFakeData">Get Fake Data</button>
+
+
+@if (TodoStore.TodoModels.Count == 0)
+{
+    <p>No data</p>
+}
+else
+{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Completed</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var todo in TodoStore.TodoModels)
+            {
+                <tr>
+                    <td>@todo.Id</td>
+                    <td>@todo.Title</td>
+                    <td>@todo.Completed</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+
+@code {
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    private string _response = string.Empty;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(5000);
+        await GetFakeData();
+    }
+    private async Task GetFakeData()
+    {
+        TodoStore.TodoModels = await TodoClient.GetTodos();
+
+        TodoStore.OnChange += StateHasChanged;
+
+        var toast = new ToastMessage()
+            {
+                Type = ToastType.Success,
+                Message = $"Conteúdo obtido com sucesso!",
+                Title = "Sucesso",
+                HelpText = $"{DateTime.Now}",
+                IconName = IconName.Activity,
+            };
+        ToastService.Notify(toast);
+    }
+
+
+    public void Dispose()
+    {
+        TodoStore.OnChange -= StateHasChanged;
+    }
+}

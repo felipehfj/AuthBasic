@@ -1,0 +1,31 @@
+@page "/todos/{TodoId:int:min(1)}"
+
+@using TodoApi.Models.Response
+@inject ITodoHttpClient TodoClient
+
+<PageTitle>Todo Detail {id}</PageTitle>
+<h3>Todo Details</h3>
+
+@if (todoModel == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+    <h4>@todoModel.Title</h4>
+    <p>@todoModel.Completed </p>
+</div>
+}
+
+@code {
+    [Parameter]
+    public int TodoId { get; set; }
+    private TodoModel todoModel { get; set;}=default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        todoModel = await TodoClient.GetOne(TodoId);
+    }
+}

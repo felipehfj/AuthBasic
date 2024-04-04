@@ -1,0 +1,17 @@
+# vscode
+.vscode/
+
+# Blazor WebAssembly
+bin/
+obj/
+//_*
+*.dll
+*.pdb
+*.wasm
+*.wasm.gz
+*.manifest.json
+*.deps.json
+*.runtimeconfig.json
+*.prejitted.dll
+*.prejitted.pdb
+

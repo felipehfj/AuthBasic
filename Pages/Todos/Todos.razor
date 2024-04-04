@@ -1,0 +1,62 @@
+@page "/fake-api/todos"
+
+@using TodoApi.Models.Response
+@inject ITodoHttpClient TodoClient
+
+<PageTitle>Todo List</PageTitle>
+
+<h3>Fake API</h3>
+
+<button @onclick="GetFakeData">Get Fake Data</button>
+
+
+@if (MyTodos.Count == 0)
+{
+    <p>No data</p>
+}
+else
+{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Completed</th>
+            <th><Icon Name="IconName.Eye" /></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var todo in MyTodos){
+                <tr>
+                    <td>@todo.Id</td>
+                    <td>@todo.Title</td>
+                    <td>@todo.Completed</td>
+                    <td><NavLink class="nav-link" href="@{$"/todos/{todo.Id}"}"><Icon Name="IconName.Eye" /></NavLink></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+}
+
+
+@code {
+    [Inject] protected ToastService ToastService { get; set; } = default!;
+    private string _response = string.Empty;
+    private ICollection<TodoModel> MyTodos = new List<TodoModel>();
+
+    private async Task GetFakeData()
+    {
+        MyTodos = await TodoClient.GetTodos();
+    
+        var toast = new ToastMessage()
+            {
+                Type = ToastType.Success,
+                Message = $"Conteúdo obtido com sucesso!",
+                Title = "Sucesso",
+                HelpText = $"{DateTime.Now}",
+                IconName = IconName.Activity,
+            };
+        ToastService.Notify(toast);
+    }    
+}
